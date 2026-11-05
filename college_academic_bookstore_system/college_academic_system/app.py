@@ -103,7 +103,7 @@ def login():
             user=con.execute("SELECT * FROM users WHERE email=?",(email,)).fetchone()
         if user and check_password_hash(user["password"],password):
             session.clear(); session.update(user_id=user["id"],name=user["name"],role=user["role"])
-            return redirect(url_for("admin") if user["role"]=="admin" else url_for("index"))
+            return redirect(url_for("admin") if user["role"]=="admin" else url_for("dashboard"))
         flash("Invalid email or password.")
     return render_template("login.html")
 
