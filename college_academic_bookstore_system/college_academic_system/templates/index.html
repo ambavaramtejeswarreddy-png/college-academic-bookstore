@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% block content %}
+<section class="hero"><h1>Your college learning hub</h1><p>Find textbooks, semester notes, previous-year papers and learning resources in one place.</p>
+<a class="btn" href="{{ url_for('books') }}">Explore Books</a> <a class="btn secondary" href="{{ url_for('materials') }}">Find Study Materials</a></section>
+<h2>Recently added books</h2><div class="cards">{% for b in books %}<article class="card"><h3>{{ b.title }}</h3><p>{{ b.author }} · {{ b.subject }}</p><p>Semester {{ b.semester }} · ₹{{ '%.2f'|format(b.price) }}</p><a href="{{ url_for('books') }}">View bookstore →</a></article>{% else %}<p>No books yet.</p>{% endfor %}</div>
+<h2>Latest study materials</h2><div class="cards">{% for m in materials %}<article class="card"><h3>{{ m.title }}</h3><p>{{ m.subject }} · Semester {{ m.semester }}</p><p>{{ m.material_type }}</p><a href="{{ url_for('materials') }}">Browse materials →</a></article>{% else %}<p>No materials uploaded yet.</p>{% endfor %}</div>{% endblock %}
