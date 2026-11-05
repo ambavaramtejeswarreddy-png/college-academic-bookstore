@@ -230,7 +230,8 @@ def dashboard():
         recent_orders=recent_orders,
         material_count=material_count
     )
-f not row: abort(404)
+f not row:
+    abort(404)
     return send_from_directory(UPLOAD_DIR,filename,as_attachment=True)
 
 @app.route("/dashboard")
