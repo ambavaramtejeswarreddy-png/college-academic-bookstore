@@ -2,7 +2,7 @@
 <title>{{ title or "Campus Books & Notes" }}</title><link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}"></head><body>
 <header><a class="brand" href="{{ url_for('index') }}">📚 Campus Books & Notes</a><nav>
 <a href="{{ url_for('books') }}">Books</a><a href="{{ url_for('materials') }}">Study Materials</a>
-{% if session.get('user_id') %}<a href="{{ url_for('cart') }}">Cart ({{ session.get('cart',{})|length }})</a><a href="{{ url_for('my_orders') }}">My Orders</a>
+{% if session.get('user_id') %}<a href="{{ url_for('cart') }}">Cart ({{ session.get('cart',{})|length }})</a><a href="{{ url_for('my_orders') }}">My Orders</a><a href="{{ url_for('dashboard') }}">Dashboard</a>
 {% if session.get('role')=='admin' %}<a href="{{ url_for('admin') }}">Admin</a>{% endif %}
 <a href="{{ url_for('logout') }}">Logout</a>{% else %}<a href="{{ url_for('login') }}">Login</a><a href="{{ url_for('register') }}">Register</a>{% endif %}
 </nav></header><main>

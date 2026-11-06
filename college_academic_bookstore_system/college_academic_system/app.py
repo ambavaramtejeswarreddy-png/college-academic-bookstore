@@ -103,7 +103,7 @@ def login():
             user=con.execute("SELECT * FROM users WHERE email=?",(email,)).fetchone()
         if user and check_password_hash(user["password"],password):
             session.clear(); session.update(user_id=user["id"],name=user["name"],role=user["role"])
-            return redirect(url_for("admin") if user["role"]=="admin" else url_for("index"))
+            return redirect(url_for("admin") if user["role"]=="admin" else url_for("dashboard"))
         flash("Invalid email or password.")
     return render_template("login.html")
 
@@ -194,11 +194,54 @@ def materials():
 
 @app.route("/uploads/<path:filename>")
 def download(filename):
-    # Only files recorded in the materials table can be downloaded.
+    # Only allow downloads of files recorded in the database.
     with db() as con:
-        row=con.execute("SELECT id FROM materials WHERE filename=?",(filename,)).fetchone()
-    if not row: abort(404)
-    return send_from_directory(UPLOAD_DIR,filename,as_attachment=True)
+        row = con.execute(
+            "SELECT id FROM materials WHERE filename = ?",
+            (filename,)
+        ).fetchone()
+
+    if not row:
+        abort(404)
+
+    return send_from_directory(
+        UPLOAD_DIR,
+        filename,
+        as_attachment=True
+    )
+
+@app.route("/dashboard")
+@login_required
+def dashboard():
+    with db() as con:
+        user = con.execute(
+            "SELECT id, name, email, role FROM users WHERE id=?",
+            (session["user_id"],)
+        ).fetchone()
+
+        order_count = con.execute(
+            "SELECT COUNT(*) FROM orders WHERE user_id=?",
+            (session["user_id"],)
+        ).fetchone()[0]
+
+        recent_orders = con.execute(
+            """SELECT * FROM orders
+               WHERE user_id=?
+               ORDER BY id DESC LIMIT 5""",
+            (session["user_id"],)
+        ).fetchall()
+
+        material_count = con.execute(
+            "SELECT COUNT(*) FROM materials"
+        ).fetchone()[0]
+
+    return render_template(
+        "dashboard.html",
+        user=user,
+        order_count=order_count,
+        recent_orders=recent_orders,
+        material_count=material_count
+    )
 
 @app.route("/admin")
 @login_required

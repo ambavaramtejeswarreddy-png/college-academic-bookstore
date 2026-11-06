@@ -1,0 +1,133 @@
+
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+.dashboard {
+    max-width: 1100px;
+    margin: 35px auto;
+    padding: 20px;
+}
+.welcome {
+    background: linear-gradient(135deg, #173b72, #2879c7);
+    color: white;
+    padding: 30px;
+    border-radius: 16px;
+    margin-bottom: 25px;
+}
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+.stat-card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.08);
+}
+.stat-card h2 {
+    color: #2465a8;
+    font-size: 30px;
+}
+.dashboard-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 25px 0;
+}
+.dashboard-links a {
+    background: #2465a8;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+}
+.dashboard-links a:hover {
+    background: #173b72;
+}
+.orders {
+    background: white;
+    padding: 22px;
+    border-radius: 12px;
+    margin-top: 25px;
+    overflow-x: auto;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+td, th {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+</style>
+
+<div class="dashboard">
+
+    <div class="welcome">
+        <h1>Welcome, {{ user.name }}! 👋</h1>
+        <p>Your College Academic Bookstore Dashboard</p>
+        <p>Manage your books, materials and orders in one place.</p>
+    </div>
+
+    <div class="stats">
+        <div class="stat-card">
+            <h2>{{ order_count }}</h2>
+            <p>Total Orders</p>
+        </div>
+
+        <div class="stat-card">
+            <h2>{{ material_count }}</h2>
+            <p>Available Study Materials</p>
+        </div>
+
+        <div class="stat-card">
+            <h2>{{ user.role|title }}</h2>
+            <p>Account Type</p>
+        </div>
+    </div>
+
+    <div class="dashboard-links">
+        <a href="{{ url_for('books') }}">Browse Books</a>
+        <a href="{{ url_for('materials') }}">Study Materials</a>
+        <a href="{{ url_for('my_orders') }}">My Orders</a>
+        <a href="{{ url_for('index') }}">Home</a>
+    </div>
+
+    <div class="orders">
+        <h2>Recent Orders</h2>
+
+        {% if recent_orders %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Total Amount</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for order in recent_orders %}
+                <tr>
+                    <td>#{{ order.id }}</td>
+                    <td>₹{{ "%.2f"|format(order.total) }}</td>
+                    <td>{{ order.status }}</td>
+                    <td>{{ order.created_at }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% else %}
+        <p>You haven't placed any orders yet.</p>
+        {% endif %}
+    </div>
+
+</div>
+
+{% endblock %}
+
