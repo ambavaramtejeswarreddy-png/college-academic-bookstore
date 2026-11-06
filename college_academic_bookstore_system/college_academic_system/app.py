@@ -194,45 +194,21 @@ def materials():
 
 @app.route("/uploads/<path:filename>")
 def download(filename):
-    # Only files recorded in the materials table can be downloaded.
+    # Only allow downloads of files recorded in the database.
     with db() as con:
-        row=con.execute("SELECT id FROM materials WHERE filename=?",(filename,)).fetchone()
-    i
-@app.route("/dashboard")
-@login_required
-def dashboard():
-    with db() as con:
-        user = con.execute(
-            "SELECT id, name, email, role FROM users WHERE id=?",
-            (session["user_id"],)
+        row = con.execute(
+            "SELECT id FROM materials WHERE filename = ?",
+            (filename,)
         ).fetchone()
 
-        order_count = con.execute(
-            "SELECT COUNT(*) FROM orders WHERE user_id=?",
-            (session["user_id"],)
-        ).fetchone()[0]
+    if not row:
+        abort(404)
 
-        recent_orders = con.execute(
-            """SELECT * FROM orders
-               WHERE user_id=?
-               ORDER BY id DESC LIMIT 5""",
-            (session["user_id"],)
-        ).fetchall()
-
-        material_count = con.execute(
-            "SELECT COUNT(*) FROM materials"
-        ).fetchone()[0]
-
-    return render_template(
-        "dashboard.html",
-        user=user,
-        order_count=order_count,
-        recent_orders=recent_orders,
-        material_count=material_count
+    return send_from_directory(
+        UPLOAD_DIR,
+        filename,
+        as_attachment=True
     )
-f not row:
-    abort(404)
-    return send_from_directory(UPLOAD_DIR,filename,as_attachment=True)
 
 @app.route("/dashboard")
 @login_required
